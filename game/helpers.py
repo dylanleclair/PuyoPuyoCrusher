@@ -21,15 +21,49 @@ def place(board,color,column):
 def projected_score(board):
     # repeat until no chains left
         # add to score based on chain
-        # vertically shift all blocks until no more gaps, repeat until no chains
-    print('change in score: ')
-
+        # increment discrete-chain counter
+        # remove blocks in chains
+        # apply gravity, repeat until no chains remain
+    b = deep(board)
+    chained_puyos = drop(b)
+    while len(chained_puyos) > 0:
+        remove_puyos(b, chained_puyos)
+        # apply gravity 
+        correct_board(b)
+        for x in b:
+            print(x)
+        print()
+        chained_puyos = drop(b)
 
 '''
-Detects a set of chained puyos to remove, returning a set of puyos to be removed as well as the number of chains
+Repairs a board after a chain is removed by dropping down all pieces 
+such that no vertical gaps among puyos exist
+'''
+def apply_gravity(board):
+    for c in range(len(board[0])):
+        for r in range(len(board)-1):
+            # if there is an empty space below the puyo, shift it down
+            if board[r+1][c] == ' ' and not board[r][c] == ' ':
+                board[r+1][c] = board[r][c]
+                board[r][c] = ' '
+
+
+def is_board_correct(board):
+    correct = True
+    for c in range(len(board[0])):
+        for r in range(len(board)-1):
+            if board[r+1][c] == ' ' and not board[r][c] == ' ':
+                correct = False
+    return correct
+
+def correct_board(board):
+    while not is_board_correct(board):
+        apply_gravity(board)
+
+'''
+Detects a set of chained puyos to remove, returning a set of puyos to be removed
 '''
 def drop(board):
-    chains = 0
     h = len(board) # find the height
     w = len(board[0]) # find the width
     puyo_to_remove = set()
@@ -44,9 +78,8 @@ def drop(board):
                 chained = scan(board, col, row, chained, color)
 
                 if len(chained) >= 4:
-                    chains+=1
                     puyo_to_remove = puyo_to_remove.union(chained)
-    return puyo_to_remove, chains
+    return puyo_to_remove
 
 '''
 Scans for a chain
@@ -76,3 +109,13 @@ def check_neighbor(board, col, row, chained, color):
         chained.append((col, row))
         chained = scan(board,col, row, chained, color)
     return chained
+
+'''
+Given a puyo board and a set of puyos to remove (tuples of row,col), 
+this function removes all such puyos - modifying the board and clearing the set afterwards.
+'''
+def remove_puyos(board, puyos):
+    # removes the puyos
+    for x in puyos:
+        board[x[0]][x[1]] = ' '
+    puyos.clear() # clear the set
