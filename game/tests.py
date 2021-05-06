@@ -9,9 +9,11 @@ board = [[' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', '
 for item in board:
     print(item)
 
+ap = helpers.AttackPowers()
+
 print()
 
-helpers.projected_score(board)
+print(helpers.projected_score(board, ap.chain_powers))
 
 '''
 helpers.remove_puyos(board, helpers.drop(board))

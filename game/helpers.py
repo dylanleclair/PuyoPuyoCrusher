@@ -1,5 +1,34 @@
 from copy import deepcopy as deep
 
+class AttackPowers:
+    chain_powers = []
+    def __init__(self):
+        # load the list of attack powers
+        
+        try:
+            file = open('resource/attack_powers.txt', 'r')
+            self.chain_powers = file.readlines()
+            self.chain_powers = [int(x) for x in self.chain_powers] # converts the values from str -> int
+
+        finally:
+            file.close()
+
+class Stack:
+    def __init__(self):
+        self.data = []
+
+    '''
+    Adds data to the top of the stack.
+    '''
+    def append(self,data):
+        self.data.append(data)
+
+
+    '''
+    Removes (and returns) the top of the stack.
+    '''
+    def pop(self):
+        return self.data.pop()
 
 
 # could likely optimize based on whether or not scarce boards are common
@@ -18,14 +47,21 @@ def place(board,color,column):
             break # terminate the loop
     return b # return the board with the placed color
 
-def projected_score(board):
+def projected_score(board, chain_powers):
     # repeat until no chains left
         # add to score based on chain
         # increment discrete-chain counter
         # remove blocks in chains
         # apply gravity, repeat until no chains remain
+
+    # initialize some variables
+    chain = 0 # the current chain length
+    chain_size = 0 # the number of puyos in the current chain
+    colors_in_chain = set() # the size of this will let us determine a bonus
+    chain_group_sizes = [] # the size of each group in a chain
+    
     b = deep(board)
-    chained_puyos = drop(b)
+    chained_puyos, chain_size = drop(b, chain_size, colors_in_chain, chain_group_sizes)
     while len(chained_puyos) > 0:
         remove_puyos(b, chained_puyos)
         # apply gravity 
@@ -33,7 +69,15 @@ def projected_score(board):
         for x in b:
             print(x)
         print()
-        chained_puyos = drop(b)
+        chained_puyos, chain_size = drop(b, chain_size, colors_in_chain, chain_group_sizes)
+        chain +=1
+    # return the score added from the move
+    #print('chain',chain)
+    #print('chain size',chain_size)
+    #print('colors in chain',colors_in_chain)
+    #print('chain group sizes',chain_group_sizes)
+
+    return get_score(chain -1,chain_powers,chain_size,colors_in_chain,chain_group_sizes)
 
 '''
 Repairs a board after a chain is removed by dropping down all pieces 
@@ -63,7 +107,7 @@ def correct_board(board):
 '''
 Detects a set of chained puyos to remove, returning a set of puyos to be removed
 '''
-def drop(board):
+def drop(board, chain_size, colors_in_chain, chain_group_sizes):
     h = len(board) # find the height
     w = len(board[0]) # find the width
     puyo_to_remove = set()
@@ -79,7 +123,10 @@ def drop(board):
 
                 if len(chained) >= 4:
                     puyo_to_remove = puyo_to_remove.union(chained)
-    return puyo_to_remove
+                    chain_size += len(chained) 
+                    colors_in_chain.add(color)
+                    chain_group_sizes.append(len(chained))
+    return puyo_to_remove, chain_size
 
 '''
 Scans for a chain
@@ -119,3 +166,49 @@ def remove_puyos(board, puyos):
     for x in puyos:
         board[x[0]][x[1]] = ' '
     puyos.clear() # clear the set
+
+def get_score( chain, chain_powers, chain_size,colors_in_chain, chain_group_sizes):
+    # https://puyonexus.com/wiki/Scoring
+    return (10 * chain_size) * max(1,min( (get_chain_power(chain, chain_powers) + get_color_bonus(colors_in_chain) + get_group_bonus(chain_group_sizes) ), 999))
+    
+
+# Default file uses Arle in Puyo Puyo Chronicle (Normal)
+# https://puyonexus.com/wiki/List_of_attack_powers
+def get_chain_power(chain, powers):
+    if (chain < len(powers)):
+        # then return the indexed value
+        return powers[chain]
+    else: 
+        # otherwise, return the largest value
+        return powers[len(powers)-1] 
+
+#  https://puyonexus.com/wiki/Scoring#Color_Bonus
+'''
+Returns the color bonus for a chain
+'''
+def get_color_bonus(num_colors):
+    if  num_colors == 1:
+        return 0
+    elif num_colors == 2:
+        return 3
+    elif num_colors ==3:
+        return 6
+    elif num_colors == 4:
+        return 12
+    elif num_colors == 5:
+        return 24
+
+    return 0
+
+# https://puyonexus.com/wiki/Scoring#Group_Bonus
+def get_group_bonus(groups):
+    local_sum = 0
+    for i in groups:
+        if (i == 4):
+            local_sum += 0 
+        elif (i <= 10):
+            local_sum += i-3
+        else: 
+            local_sum += 10
+
+    return local_sum
