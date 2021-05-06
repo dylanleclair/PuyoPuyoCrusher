@@ -1,21 +1,5 @@
 from . import helpers
 
-class Stack:
-    def __init__(self):
-        self.data = []
-
-    '''
-    Adds data to the top of the stack.
-    '''
-    def append(self,data):
-        self.data.append(data)
-
-
-    '''
-    Removes (and returns) the top of the stack.
-    '''
-    def pop(self):
-        return self.data.pop()
 
 class AndNode:
 
@@ -68,6 +52,9 @@ class AndNode:
         print('advancing the search')
 
 
+
+
+
     def search(self): 
         # computes the search
         print('performing a search')
@@ -76,14 +63,20 @@ class AndNode:
 # need some code to simulate a 'move' on the board
 # also need to calculate the score / update board once the move is completed
 
-def search(board):
-    # initialize the data structures for the search
-    root = AndNode(board,[]) # creates the root of the and search tree being used
-    leaves = Stack() # a stack that will contain the leaves of the tree that will need to be searched. 
 
-    # perform the search
-    # some constraints to keep in mind: 
-    #   - items added to the stack need to be done so in the correct order (higher priority to more promising leaves)
+class Search:
+    def __init__(self,board):
+        # create a new search, with the board
+        self.ap = helpers.AttackPowers() # loads the list of attack powers to be used in scoring
+        self.root = AndNode(board,[]) # creates the root of the and search tree being used
+        self.leaves = helpers.Stack() # a stack that will contain the leaves of the tree that will need to be searched. 
+
+    def search(self):
+        print('starting the search')
+        # perform the search
+        # some constraints to keep in mind: 
+        #   - items added to the stack need to be done so in the correct order (higher priority to more promising leaves)
+
 
 
 
