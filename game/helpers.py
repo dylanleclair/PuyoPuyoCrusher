@@ -45,6 +45,8 @@ def place(board,color,column):
             row = i - 1 # this is the value of the row that the block should be placed in 
             b[row][column] = color # update the board
             break # terminate the loop
+        elif (i == len(b) -1):
+            b[i][column] = color # update the board
     return b # return the board with the placed color
 
 def projected_score(board, chain_powers):
