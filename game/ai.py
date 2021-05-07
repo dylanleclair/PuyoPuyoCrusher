@@ -99,10 +99,10 @@ class AndNode:
 
 
 class Search:
-    def __init__(self,board):
+    def __init__(self,board, buffer):
         # create a new search, with the board
         self.ap = helpers.AttackPowers().chain_powers # loads the list of attack powers to be used in scoring
-        self.root = AndNode(board,[('1','1'), ('2','2'),('2','1'), ('2','1')],0, []) # creates the root of the and search tree being used
+        self.root = AndNode(board,buffer,0, []) # creates the root of the and search tree being used
         self.leaves = helpers.Stack() # a stack that will contain the leaves of the tree that will need to be searched. 
     # search
     def search(self):

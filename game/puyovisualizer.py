@@ -51,6 +51,16 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit()
             if self.player1.falling and not (counter % 3):
+                # compute the optimal move, and make it!
+                
+                # feed the board into the search
+                if len(self.player1.moves_to_make) > 0:
+                    # make the move, and wait
+                    
+                else: 
+                    # perform the search
+                    self.player1.moves_to_make = self.player1.searcher.search()
+
                 keys = pygame.key.get_pressed()
                 col1, row1 = self.player1.falling[0]['pos']
                 col2, row2 = self.player1.falling[1]['pos']
