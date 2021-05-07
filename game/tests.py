@@ -14,6 +14,7 @@ for x in result.board:
     print(x)
 
 print('score', result.score_accumulated)
+print('moves', result.moves)
 
 '''
 results = s.root.div()
