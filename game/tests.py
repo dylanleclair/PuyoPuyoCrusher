@@ -7,7 +7,15 @@ board = [[' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', '
 
 
 s = ai.Search(board)
+result = s.search()
 
+print('board: ')
+for x in result.board:
+    print(x)
+
+print('score', result.score_accumulated)
+
+'''
 results = s.root.div()
 
 for x in results:
@@ -15,7 +23,7 @@ for x in results:
         print(y)
     print()
 
-'''
+
 #board = [[' ' for x in range(w)] for y in range(h)]
 
 for item in board:

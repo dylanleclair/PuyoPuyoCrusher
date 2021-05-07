@@ -20,15 +20,17 @@ class Stack:
     '''
     Adds data to the top of the stack.
     '''
-    def append(self,data):
+    def push(self,data):
         self.data.append(data)
 
+    def length(self):
+        return len(self.data)
 
     '''
     Removes (and returns) the top of the stack.
     '''
     def pop(self):
-        return self.data.pop()
+        return self.data.pop(0)
 
 
 # could likely optimize based on whether or not scarce boards are common
@@ -68,9 +70,6 @@ def projected_score(board, chain_powers):
         remove_puyos(b, chained_puyos)
         # apply gravity 
         correct_board(b)
-        for x in b:
-            print(x)
-        print()
         chained_puyos, chain_size = drop(b, chain_size, colors_in_chain, chain_group_sizes)
         chain +=1
     # return the score added from the move
@@ -214,3 +213,10 @@ def get_group_bonus(groups):
             local_sum += 10
 
     return local_sum
+
+
+def print_board(board):
+    print()
+    for x in board:
+        print(x)
+    print()
