@@ -78,7 +78,7 @@ def projected_score(board, chain_powers):
     #print('colors in chain',colors_in_chain)
     #print('chain group sizes',chain_group_sizes)
 
-    return get_score(chain -1,chain_powers,chain_size,colors_in_chain,chain_group_sizes)
+    return b, get_score(chain -1,chain_powers,chain_size,colors_in_chain,chain_group_sizes)
 
 '''
 Repairs a board after a chain is removed by dropping down all pieces 

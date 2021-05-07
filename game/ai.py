@@ -82,9 +82,10 @@ class AndNode:
                 print(x)
             print()
             '''
-            #print(self.score_accumulated + helpers.projected_score(b,ap))
-            #helpers.print_board(b)
-            node = AndNode(b,new_buffer, self.score_accumulated + helpers.projected_score(b,ap))
+            b, local_score = helpers.projected_score(b,ap)
+            local_score += self.score_accumulated
+            helpers.correct_board(b)
+            node = AndNode(b,new_buffer, local_score)
             # add them to the stack depending on search control (right now, just exhaustive search)
             stack.push(node)
         
