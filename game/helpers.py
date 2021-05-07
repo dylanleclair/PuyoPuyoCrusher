@@ -252,3 +252,18 @@ def print_board(board):
     for x in board:
         print(x)
     print()
+
+
+def get_code(col1,row1,col2,row2):
+    # first, calculate the column:
+    col = min(col1,col2)
+    if col1 == col2:
+        if row1 < row2:
+            return col,1
+        else:
+            return col, 3
+    elif row1 == row2:
+        if col1 > col2:
+            return col, 2
+        else: 
+            return col, 4

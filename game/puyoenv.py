@@ -1,6 +1,7 @@
 import copy
 import random
 import ai
+import helpers
 
 class PuyoEnv:
     w = 6
@@ -37,7 +38,13 @@ class PuyoEnv:
                       ((-1, 5), (-1, 4))]
         self.buffer = [self.next(), self.next()]
         self.current = self.next()
+
+        # AI specific
         self.moves_to_make = []
+        
+        self.searcher = ai.Search(self.board, [self.current] + self.buffer)
+        # end of ai specific
+        
         row = 0
         col = 0
         if template:
@@ -137,16 +144,20 @@ class PuyoEnv:
                     self.falling = ({'colour': colour0, 'pos': (-1, 2)},
                                     {'colour': colour1, 'pos': (0, 2)})
                     self.buffer.append(self.next())
+                    self.current = (colour0,colour1)
+                    if len(self.moves_to_make) > 0:
+                        self.moves_to_make.pop(0)
+                    self.searcher = ai.Search(self.board, [self.current] + self.buffer)
+                    # initialize the search
         else:
-            self.searcher = ai.Search(self.board, [self.current] + self.buffer)
             col1, row1 = self.falling[0]['pos']
             col2, row2 = self.falling[1]['pos']
-
             if (col1 == (self.h - 1) or self.board[col1 + 1][row1] != ' '
                     or col2 == (self.h - 1) or self.board[col2 + 1][row2] != ' '):
                 self.board[col1][row1] = self.falling[0]['colour']
                 self.board[col2][row2] = self.falling[1]['colour']
                 self.falling = None
+                
             else:
                 self.falling[0]['pos'] = (col1 + 1, row1)
                 self.falling[1]['pos'] = (col2 + 1, row2)

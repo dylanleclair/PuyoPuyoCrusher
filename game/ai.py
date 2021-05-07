@@ -16,6 +16,8 @@ class AndNode:
         new_instances = [] # the list of new problem instances to be considered by the search
 
         piece = self.buffer[0]
+        # need to flip the piece?
+        piece = (piece[1], piece[0])
         board = self.board
         if piece[0] == piece[1]:
             # if the colors are identical, we need to consider this. 
@@ -110,9 +112,11 @@ class Search:
         # perform the search
         # some constraints to keep in mind: 
         #   - items added to the stack need to be done so in the correct order (higher priority to more promising leaves)
-
+        print('active buffer', self.root.buffer)
+        print('board')
+        helpers.print_board(self.root.board)
         self.root.advance(self.leaves, self.ap) # advance the search
-
+                
         best_score = 0
         best = self.root
 
