@@ -105,11 +105,8 @@ def correct_board(board):
     while not is_board_correct(board):
         apply_gravity(board)
 
-
-def unencode_move(move, piece, board_width):
-    print('unencoding move')
-    # returns column and rotation that the piece should be placed in 
-    # rotations: 1 = upright, 2 = horizontal, left, 3 = downwards, 4 = horizontal, right
+# DEPRECATED
+def decode_move(move, piece, board_width):
 
     if piece[0] == piece[1]:
         # if the colors are identical, we need only consider rotations 1 and 2
@@ -129,6 +126,17 @@ def unencode_move(move, piece, board_width):
             return move - board_width, 2 # return column (for ex. move 6 when board_width = 6 is the first horizontal move, but this should be in the 0th column: subtract board width!), always horizontal
     
     else: # direction of the piece is important!!!!!
+
+        if move < board_width: # "upwards" orientation
+            return move, 1
+        elif move < 2 * board_width: # "downwards" orientation
+            return move - board_width, 3
+
+        elif move < 3 * board_width:
+            return move - 2 * board_width, 2 # "left-to-right"
+        
+        else:
+            return move - 3 * board_width, 4 # "right-to-left"
 '''
 Detects a set of chained puyos to remove, returning a set of puyos to be removed
 '''
