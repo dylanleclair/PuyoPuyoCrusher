@@ -3,6 +3,7 @@ mod scoring;
 mod ai;
 
 use std::collections::HashSet;
+use std::collections::VecDeque;
 use std::vec;
 use std::cmp;
 const POWERS: [i32; 19] = [
@@ -19,27 +20,34 @@ fn main() {
     //}
     //println!("Board is: {:?}!", arr);
 
-    let mut my_board = new_board(6, 12);
-    print_board(&new_board(6, 12));
-    
-    place(&mut my_board, 1, 0);
-    place(&mut my_board, 1, 1);
-    place(&mut my_board, 1, 2);
-    place(&mut my_board, 1, 3);
+    let my_board = new_board(6, 12);
+    //print_board(&new_board(6, 12));
 
-    place(&mut my_board, 2, 0);
-    place(&mut my_board, 2, 1);
-    place(&mut my_board, 2, 2);
-    place(&mut my_board, 2, 3);
+    let mut moves = VecDeque::new();
+    moves.push_back((1,1));
+    moves.push_back((1,2));
+    moves.push_back((1,2));
+    //moves.push_back((2,2));
 
-    print_board(&my_board);
+    //let mut stack = Vec::new();
 
-    let mut score = scoring::Score::new();
-    let results = drop_board(&my_board, &mut score);
-    println!("wow {:?}", results);
-    score.report();
+    //let lol = ai::Node::new(my_board.to_vec(), moves, 0, Vec::new());
+    //lol.advance(&mut stack);
 
-    println!("projected score: {}",projected_score(my_board).1);
+
+
+    let mut s = ai::Search::new(&my_board, moves);
+
+    let r = s.search();
+
+    println!("Recommended moves: {:?}", r);
+
+    // let mut score = scoring::Score::new();
+    // let results = drop_board(&my_board, &mut score);
+    // println!("w{:?}", results);
+    // score.report();
+
+    // println!("projected score: {}",projected_score(my_board).1);
 }
 
 /// Creates a blank board with the specified width and height
@@ -151,7 +159,7 @@ fn projected_score(board: Vec<Vec<u8>>) -> (Vec<Vec<u8>>,i32) {
         remove_puyos(&mut b, & mut to_remove);
         // apply gravity
         correct_board(&mut b);
-        print_board(&b);
+
         to_remove = drop_board(&b,& mut s);
         chain += 1;
     }
@@ -161,14 +169,21 @@ fn projected_score(board: Vec<Vec<u8>>) -> (Vec<Vec<u8>>,i32) {
 }
 
 fn chain_power(chain: i32) -> i32 {
-    if chain < POWERS.len() as i32 {
-        return POWERS[(chain - 1)as usize];
+    if chain == 0 {
+        return 0;
+    }
+
+    else if chain < POWERS.len() as i32 {
+        return POWERS[(chain - 1) as usize];
     } else {
         return POWERS[POWERS.len() - 1];
     }
 }
 
 fn color_bonus(num_colors: usize) -> i32 {
+    if num_colors == 0 {
+        return 0;
+    }
     if num_colors < COLORS_BONUS.len() {
         return COLORS_BONUS[num_colors - 1];
     }
@@ -201,7 +216,8 @@ fn remove_puyos(board:& mut Vec<Vec<u8>>, puyos:& mut HashSet<(u8,u8)>) {
 
 fn correct_board(board:&mut Vec<Vec<u8>>) {
     // corrects the board after puyos are removed from it (in the even gaps exist)
-    let mut copy = board.to_vec();
+    let mut copy = board.clone();
+    apply_gravity(board);
     while copy != *board {
         apply_gravity(board);
         copy = board.to_vec();
@@ -213,7 +229,7 @@ fn apply_gravity(board:&mut Vec<Vec<u8>>) {
     let w = board[0].len(); // find the width
     for c in 0..w {
         for r in 0..h {
-            if board[r+1][c] == 0 && !board[r][c]==0 {
+            if board[r+1][c] == 0 && !(board[r][c]==0) {
                 board[r+1][c] = board[r][c];
                 board[r][c] = 0;
             }

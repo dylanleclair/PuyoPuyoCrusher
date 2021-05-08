@@ -15,7 +15,7 @@ impl Score {
     }
     pub fn report(&mut self) {
         println!(
-            "Chain size: {}, Colors in chain: {:?}, Chain group sizes: {:?}",
+            "x-Chain: {}, Chain size: {}, Colors in chain: {:?}, Chain group sizes: {:?}",self.chain + 1,
             self.chain_size, self.colors_in_chain, self.chain_group_sizes
         );
     }

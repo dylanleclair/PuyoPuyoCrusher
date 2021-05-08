@@ -1,8 +1,7 @@
 //! The search class
 use std::collections::VecDeque;
-
-struct Node {
-    board: Vec<Vec<u8>>,
+pub struct Node {
+    pub board: Vec<Vec<u8>>,
     buffer: VecDeque<(u8,u8)>,
     score_acc: i32,
     moves: Vec<(u8,u8)> 
@@ -23,7 +22,8 @@ impl Node {
         }
     
     /// Returns a new board, along with the move that was taken to yield it in Simple Puyo Puyo Notation
-    pub fn div(&mut self, piece:(u8,u8)) -> Vec<(Vec<Vec<u8>>,(u8,u8))> {
+    /// Tested, runs fine.
+    pub fn div(&self, piece:(u8,u8)) -> Vec<(Vec<Vec<u8>>,(u8,u8))> {
         let mut new : Vec<(Vec<Vec<u8>>,(u8,u8))> = Vec::new();
 
         let piece = (piece.1,piece.0); // reverse it so encoding works properly
@@ -84,7 +84,7 @@ impl Node {
     } 
 
     // Advances the search, creating new leaves from a given leaf
-    fn advance(&mut self, stack: &mut Vec<Node>) {
+    pub fn advance(&self, stack: &mut Vec<Node>) {
 
         if self.buffer.len() == 0 {
             return;
@@ -103,7 +103,7 @@ impl Node {
             new_moves.push(next_move); // add the new move to end of accumulated
 
             let results = super::projected_score(board);
-
+            
             // @TODO shouldn't need to return the board unless you are reconsidering after every move
             // since no side effects are possible using the current heuristic
 
@@ -113,4 +113,42 @@ impl Node {
 
     }
 
+}
+
+
+pub struct Search {
+    root: Node,
+    leaves: Vec<Node>
+}
+
+impl Search {
+    pub fn new(board:&Vec<Vec<u8>>, buffer:VecDeque<(u8,u8)>) -> Search {
+        return Search {
+            root: Node::new(board.to_vec(), buffer, 0, Vec::new()),
+            leaves: Vec::new()
+        }
+
+    }
+
+    pub fn search(&mut self) -> Vec<(u8,u8)> {
+        // advance the search
+        self.root.advance(&mut self.leaves);
+        let mut best_score = 0;
+        let mut best = self.root.moves.to_vec();
+        
+        while self.leaves.len() > 0 {
+            let current = self.leaves.pop().expect("Leaf expected, but none found.");
+            
+            if current.score_acc > best_score {
+                best_score = current.score_acc;
+                best = current.moves.to_vec();
+            }
+
+            current.advance(&mut self.leaves);
+        }
+
+        println!("{}",best_score);
+        return best;
+
+    }
 }
