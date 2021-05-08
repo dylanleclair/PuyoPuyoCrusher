@@ -94,7 +94,7 @@ class AndNode:
             new_moves.append(move) # add the taken move to the list of moves
             b2, local_score = helpers.projected_score(b,ap) # returns the corrected board after removing chains, as well as score added by chain
             local_score += self.score_accumulated 
-            node = AndNode(b,new_buffer, local_score, new_moves) # create the new and node 
+            node = AndNode(b2,new_buffer, local_score, new_moves) # create the new and node 
             # add them to the stack depending on search control (right now, just exhaustive search)
             stack.push(node)
         

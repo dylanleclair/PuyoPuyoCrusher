@@ -205,7 +205,7 @@ def remove_puyos(board, puyos):
 
 def get_score( chain, chain_powers, chain_size,colors_in_chain, chain_group_sizes):
     # https://puyonexus.com/wiki/Scoring
-    print(get_chain_power(chain, chain_powers))
+    #print(get_chain_power(chain, chain_powers))
     return (10 * chain_size) * max(1,min( ( get_chain_power(chain, chain_powers) + get_color_bonus(len(colors_in_chain)) + get_group_bonus(chain_group_sizes) ), 999))
     
 
