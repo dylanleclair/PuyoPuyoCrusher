@@ -6,6 +6,9 @@ h = 13
 board = [[' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ']]
 
 
+
+'''
+
 s = ai.Search(board,[('1','3'), ('3','3'),('1','3')])
 result = s.search()
 
@@ -16,7 +19,7 @@ for x in result.board:
 print('score', result.score_accumulated)
 
 print('moves', result.moves)
-'''
+
 results = s.root.div()
 
 for x in results:
@@ -24,7 +27,7 @@ for x in results:
         print(y)
     print()
 
-
+'''
 #board = [[' ' for x in range(w)] for y in range(h)]
 
 for item in board:
@@ -32,19 +35,20 @@ for item in board:
 
 ap = helpers.AttackPowers()
 
-print()
-
-print(helpers.projected_score(board, ap.chain_powers))
-
-b = helpers.place(board,'1', 3)
+b = helpers.place(board,'1', 0)
+b = helpers.place(b,'1', 1)
+b = helpers.place(b,'1', 2)
 b = helpers.place(b,'1', 3)
-b = helpers.place(b,'1', 2)
-b = helpers.place(b,'1', 2)
+b = helpers.place(b,'2', 0)
+b = helpers.place(b,'2', 1)
+b = helpers.place(b,'2', 2)
+b = helpers.place(b,'2', 3)
 
 print(helpers.projected_score(b, ap.chain_powers))
 for x in b:
     print(x)
 
+'''
 helpers.remove_puyos(board, helpers.drop(board))
 
 for item in board:

@@ -35,8 +35,10 @@ class Stack:
 
 # could likely optimize based on whether or not scarce boards are common
 def place(board,color,column):
+    '''
     if not (board[0][column] == ' '):
         return False # the move is invalid
+    '''
     # copy the board
     b = deep(board)
     # place the color at the heighest possible place of the specified column
@@ -65,6 +67,7 @@ def projected_score(board, chain_powers):
     chain_group_sizes = [] # the size of each group in a chain
     
     b = deep(board)
+    # for some reason, b is false?
     chained_puyos, chain_size = drop(b, chain_size, colors_in_chain, chain_group_sizes)
     while len(chained_puyos) > 0:
         remove_puyos(b, chained_puyos)
@@ -202,7 +205,8 @@ def remove_puyos(board, puyos):
 
 def get_score( chain, chain_powers, chain_size,colors_in_chain, chain_group_sizes):
     # https://puyonexus.com/wiki/Scoring
-    return (10 * chain_size) * max(1,min( (get_chain_power(chain, chain_powers) + get_color_bonus(colors_in_chain) + get_group_bonus(chain_group_sizes) ), 999))
+    print(get_chain_power(chain, chain_powers))
+    return (10 * chain_size) * max(1,min( ( get_chain_power(chain, chain_powers) + get_color_bonus(len(colors_in_chain)) + get_group_bonus(chain_group_sizes) ), 999))
     
 
 # Default file uses Arle in Puyo Puyo Chronicle (Normal)

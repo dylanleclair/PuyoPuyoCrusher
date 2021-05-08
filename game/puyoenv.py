@@ -140,6 +140,7 @@ class PuyoEnv:
                     print("GAME OVER")
                     return False
                 else:
+                    # add a new piece
                     colour0, colour1 = self.buffer.pop(0)
                     self.falling = ({'colour': colour0, 'pos': (-1, 2)},
                                     {'colour': colour1, 'pos': (0, 2)})

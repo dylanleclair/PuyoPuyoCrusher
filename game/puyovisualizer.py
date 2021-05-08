@@ -46,7 +46,7 @@ class Game:
         counter = 0
         while True:
             counter += 1
-            self.clock.tick(60)
+            self.clock.tick(30)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -96,7 +96,7 @@ class Game:
                     result = self.player1.searcher.search()
                     self.player1.moves_to_make = result.moves
                     if not self.player1.moves_to_make:
-                        self.player1.moves_to_make.append((2,1))
+                        self.player1.moves_to_make.append((5,1))
                     else: 
                         helpers.print_board(result.board)
                         print('ai recommends moves:', result.moves)
