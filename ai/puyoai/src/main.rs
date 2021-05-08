@@ -19,26 +19,27 @@ fn main() {
     //}
     //println!("Board is: {:?}!", arr);
 
-    let my_board = new_board(6, 12);
+    let mut my_board = new_board(6, 12);
     print_board(&new_board(6, 12));
+    
+    place(&mut my_board, 1, 0);
+    place(&mut my_board, 1, 1);
+    place(&mut my_board, 1, 2);
+    place(&mut my_board, 1, 3);
 
-    let o = place(my_board, 1, 0);
-    let o = place(o, 1, 1);
-    let o = place(o, 1, 2);
-    let o = place(o, 1, 3);
+    place(&mut my_board, 2, 0);
+    place(&mut my_board, 2, 1);
+    place(&mut my_board, 2, 2);
+    place(&mut my_board, 2, 3);
 
-    let o = place(o, 2, 0);
-    let o = place(o, 2, 1);
-    let o = place(o, 2, 2);
-    let o = place(o, 2, 3);
-    print_board(&o);
+    print_board(&my_board);
 
     let mut score = scoring::Score::new();
-    let results = drop_board(&o, &mut score);
-    println!("{:?}", results);
+    let results = drop_board(&my_board, &mut score);
+    println!("wow {:?}", results);
     score.report();
 
-    println!("projected score: {}",projected_score(o));
+    println!("projected score: {}",projected_score(my_board).1);
 }
 
 /// Creates a blank board with the specified width and height
@@ -58,18 +59,17 @@ fn print_board(board: &Vec<Vec<u8>>) {
     }
 }
 
-/// Returns a new board, with the specified colour at the highest empty row in the specified column.
-fn place(board: Vec<Vec<u8>>, color: u8, column: u8) -> Vec<Vec<u8>> {
+/// Adds a puyo to the board, with the specified colour at the highest empty row in the specified column.
+/// Make sure to copy the board before performing placements.
+fn place(board: &mut Vec<Vec<u8>>, color: u8, column: u8) {
     // copy the board
-    let mut b = board.to_vec();
     for i in 0..board.len() {
-        if b[i][column as usize] != 0 {
-            b[i - 1][column as usize] = color
+        if board[i][column as usize] != 0 {
+            board[i - 1][column as usize] = color
         } else if i == board.len() - 1 {
-            b[i][column as usize] = color
+            board[i][column as usize] = color
         }
     }
-    return b;
 }
 
 /// Takes a board and a reference to a Score.
@@ -142,7 +142,7 @@ fn check_neighbor(
     }
 }
 
-fn projected_score(board: Vec<Vec<u8>>) -> i32{
+fn projected_score(board: Vec<Vec<u8>>) -> (Vec<Vec<u8>>,i32) {
     let mut b = board.to_vec();
     let mut s = scoring::Score::new();
     let mut to_remove = drop_board(&board, & mut s);
@@ -156,7 +156,7 @@ fn projected_score(board: Vec<Vec<u8>>) -> i32{
         chain += 1;
     }
     s.chain = chain;
-    return get_score(&s);
+    return (b,get_score(&s));
     
 }
 
