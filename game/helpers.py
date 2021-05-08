@@ -30,7 +30,7 @@ class Stack:
     Removes (and returns) the top of the stack.
     '''
     def pop(self):
-        return self.data.pop(0)
+        return self.data.pop()
 
 
 # could likely optimize based on whether or not scarce boards are common

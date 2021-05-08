@@ -42,6 +42,17 @@ fn main() {
 
     println!("Recommended moves: {:?}", r);
 
+    let mut wtf = new_board(6, 12);
+
+    place(&mut wtf, 1, 0);
+    place(&mut wtf, 1, 0);
+    place(&mut wtf, 1, 0);
+    place(&mut wtf, 2, 0);
+    place(&mut wtf, 2, 0);
+    place(&mut wtf, 2, 0);
+
+    print_board(&wtf);
+
     // let mut score = scoring::Score::new();
     // let results = drop_board(&my_board, &mut score);
     // println!("w{:?}", results);
@@ -72,10 +83,13 @@ fn print_board(board: &Vec<Vec<u8>>) {
 fn place(board: &mut Vec<Vec<u8>>, color: u8, column: u8) {
     // copy the board
     for i in 0..board.len() {
-        if board[i][column as usize] != 0 {
-            board[i - 1][column as usize] = color
-        } else if i == board.len() - 1 {
-            board[i][column as usize] = color
+        // iterate from top to bottom of a column, 
+        // until a color is reached
+        if !(board[i][column as usize] == 0) {
+            board[i - 1][column as usize] = color; // place the color above the last item!
+            break;
+        } else if i == (board.len() - 1) {
+            board[i][column as usize] = color;
         }
     }
 }
@@ -157,6 +171,7 @@ fn projected_score(board: Vec<Vec<u8>>) -> (Vec<Vec<u8>>,i32) {
     let mut chain = 0;
     while to_remove.len() > 0 {
         remove_puyos(&mut b, & mut to_remove);
+        
         // apply gravity
         correct_board(&mut b);
 

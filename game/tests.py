@@ -7,9 +7,9 @@ board = [[' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' '], [' ', '
 
 
 
-'''
 
-s = ai.Search(board,[('1','3'), ('3','3'),('1','3')])
+
+s = ai.Search(board,[('1','1'), ('1','2'),('1','2')])
 result = s.search()
 
 print('board: ')
@@ -48,7 +48,7 @@ print(helpers.projected_score(b, ap.chain_powers))
 for x in b:
     print(x)
 
-'''
+
 helpers.remove_puyos(board, helpers.drop(board))
 
 for item in board:

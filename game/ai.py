@@ -11,7 +11,7 @@ class AndNode:
         self.score_accumulated = score # the score accumulated up to this point in the search
         self.moves = moveset
     # the division relation (splits the problem into different choices)
-    def div(self, piece):
+    def div(self):
 
         new_instances = [] # the list of new problem instances to be considered by the search
 
@@ -77,7 +77,7 @@ class AndNode:
         next_piece = new_buffer.pop(0)
 
         # pass it through div to find the next boards
-        new_boards = self.div(next_piece) 
+        new_boards = self.div() 
 
         # create the proper search instances for them
         for pair in new_boards:
@@ -94,7 +94,7 @@ class AndNode:
             new_moves.append(move) # add the taken move to the list of moves
             b2, local_score = helpers.projected_score(b,ap) # returns the corrected board after removing chains, as well as score added by chain
             local_score += self.score_accumulated 
-            node = AndNode(b2,new_buffer, local_score, new_moves) # create the new and node 
+            node = AndNode(b,new_buffer, local_score, new_moves) # create the new and node 
             # add them to the stack depending on search control (right now, just exhaustive search)
             stack.push(node)
         
