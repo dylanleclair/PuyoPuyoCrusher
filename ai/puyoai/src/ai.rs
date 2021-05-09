@@ -52,12 +52,10 @@ impl Node {
         } else {
             for i in 0..w {
                 // handle the vertical possibilities
-                println!("piece {:?}", piece);
                 // "top to bottom"
                 let mut b = self.board.to_vec();
                 super::place(&mut b,piece.0,i as u8);
                 super::place(&mut b,piece.1,i as u8);
-                super::print_board(&b);
                 new.push((b,(i as u8,1)));
                 
                 // "bottom to top"
@@ -95,10 +93,7 @@ impl Node {
         }
 
         let mut buffer = self.buffer.clone(); // copy the buffer -> this is to be the buffer in the next node
-        println!("before {:?}", buffer);
         let next_piece: (u8,u8) = buffer.pop_front().expect("Buffer is empty."); // get the first move
-        println!("after {:?}", buffer);
-        println!("next piece: {:?}", next_piece);
         let new_boards =  self.div(next_piece);
 
         for pair in new_boards {
@@ -141,20 +136,16 @@ impl Search {
         self.root.advance(&mut self.leaves);
         let mut best_score = 0;
         let mut best = self.root.moves.to_vec();
-        let mut best_board = self.root.board.to_vec();
         while self.leaves.len() > 0 {
             let current = self.leaves.pop().expect("Leaf expected, but none found.");
             
             if current.score_acc > best_score {
                 best_score = current.score_acc;
                 best = current.moves.to_vec();
-                best_board = current.board.to_vec();
             }
 
             current.advance(&mut self.leaves);
         }
-        super::print_board(&best_board);
-        println!("{}",best_score);
         return best;
 
     }

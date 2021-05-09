@@ -13,7 +13,7 @@ impl Score {
             chain_group_sizes: Vec::new(),
         };
     }
-    pub fn report(&mut self) {
+    pub fn _report(&mut self) {
         println!(
             "x-Chain: {}, Chain size: {}, Colors in chain: {:?}, Chain group sizes: {:?}",self.chain + 1,
             self.chain_size, self.colors_in_chain, self.chain_group_sizes
