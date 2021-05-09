@@ -19,7 +19,8 @@ const COLORS_BONUS: [i32; 5] = [0, 3, 6, 12, 24];
 struct Board {
     width: i32,
     height: i32,
-    board: Vec<Vec<u8>>
+    board: Vec<Vec<u8>>,
+    buffer: VecDeque<(u8,u8)>
 }
 
 #[derive(Serialize,Deserialize)]
@@ -28,29 +29,20 @@ struct Moves {
 }
 
 #[post("/")]
-async fn serve_board(body: String) -> Result<HttpResponse> {
+async fn serve_board(body: web::Json<Board>) -> Result<HttpResponse> {
+
     // perform a search
+    let moves = body.buffer.clone();
 
+    let mut s = ai::Search::new(&body.board, moves); // can change moves to a static reference!
 
-    let my_board = new_board(6, 12);
-    //print_board(&new_board(6, 12));
-
-    let mut moves = VecDeque::new();
-    moves.push_back((1,1));
-    moves.push_back((1,2));
-    moves.push_back((1,2));
-
-    //let mut s = ai::Search::new(&body.board, moves);
-
-    //let r = s.search();
-
+    let r = s.search();
 
     // return the calculated moves
-    Ok(HttpResponse::Ok().json(Board {
-        height: 12,
-        width: 6,
-        board: my_board,
+    Ok(HttpResponse::Ok().json(Moves {
+        moves: r,
     }))
+
 }
 
 #[actix_web::main]
