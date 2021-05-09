@@ -42,7 +42,7 @@ class PuyoEnv:
         # AI specific
         self.moves_to_make = []
         
-        self.searcher = ai.Search(self.board, [self.current] + self.buffer)
+        #self.searcher = ai.Search(self.board, [self.current] + self.buffer)
         # end of ai specific
         
         row = 0
@@ -148,7 +148,7 @@ class PuyoEnv:
                     self.current = (colour0,colour1)
                     if len(self.moves_to_make) > 0:
                         self.moves_to_make.pop(0)
-                    self.searcher = ai.Search(self.board, [self.current] + self.buffer)
+                    #self.searcher = ai.Search(self.board, [self.current] + self.buffer)
                     # initialize the search
         else:
             col1, row1 = self.falling[0]['pos']
@@ -185,6 +185,17 @@ class PuyoEnv:
             self.buffer.append(self.next())
         return True
 
+    def get_board(self):
+        out = []
+        for i in range(len(self.board)):
+            row = []
+            for j in range(len(self.board[0])):
+                if self.board[i][j] == ' ':
+                    row.append(0)
+                else:
+                    row.append(int(self.board[i][j]))
+            out.append(row)
+        return out
 
 chain_19 = \
     """  3211

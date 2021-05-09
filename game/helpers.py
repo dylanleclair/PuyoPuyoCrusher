@@ -271,3 +271,22 @@ def get_code(col1,row1,col2,row2):
             return col, 2
         else: 
             return col, 4
+
+def collection_to_int(collection):
+    out = []
+    for i in range(len(collection)):
+        row = []
+        for j in range(len(collection[0])):
+            if collection[i][j] == ' ':
+                row.append(0)
+            else:
+                row.append(int(collection[i][j]))
+        out.append(row)
+    return out
+
+def parse_moves(collection):
+    out = []
+    for x in collection:
+        tup = (x[0],x[1])
+        out.append(tup)
+    return out

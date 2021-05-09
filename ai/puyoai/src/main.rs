@@ -7,7 +7,7 @@ use std::collections::VecDeque;
 use std::vec;
 use std::cmp;
 
-use actix_web::{get, post, web, App, HttpResponse, Result,Responder};
+use actix_web::{post, web, HttpResponse, Result};
 use serde::{Deserialize, Serialize};
 const POWERS: [i32; 19] = [
     0, 8, 17, 23, 35, 71, 118, 178, 239, 300, 377, 454, 534, 613, 693, 699, 699, 699, 699,
@@ -73,7 +73,7 @@ async fn main() -> std::io::Result<()> {
 // }
 
 /// Creates a blank board with the specified width and height
-fn new_board(w: usize, h: usize) -> Vec<Vec<u8>> {
+fn _new_board(w: usize, h: usize) -> Vec<Vec<u8>> {
     let mut output = Vec::new();
     for _i in 0..h {
         output.push(vec![0; w]);
@@ -93,7 +93,7 @@ fn _print_board(board: &Vec<Vec<u8>>) {
 /// Make sure to copy the board before performing placements.
 fn place(board: &mut Vec<Vec<u8>>, color: u8, column: u8) {
     // copy the board
-    for i in 0..board.len() {
+    for i in 1..board.len() {
         // iterate from top to bottom of a column, 
         // until a color is reached
         if !(board[i][column as usize] == 0) {
@@ -240,13 +240,25 @@ fn remove_puyos(board:& mut Vec<Vec<u8>>, puyos:& mut HashSet<(u8,u8)>) {
 
 }
 
+fn check_correctness(board:& Vec<Vec<u8>>) -> bool
+{
+    for c in 0..board[0].len()
+    {
+        for r in 0..(board.len()-1)
+        {
+            if board[r+1][c] == 0 && !(board[r][c] == 0)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 fn correct_board(board:&mut Vec<Vec<u8>>) {
     // corrects the board after puyos are removed from it (in the even gaps exist)
-    let mut copy = board.clone();
-    apply_gravity(board);
-    while copy != *board {
+    while !check_correctness(board){
         apply_gravity(board);
-        copy = board.to_vec();
     }
 }
 

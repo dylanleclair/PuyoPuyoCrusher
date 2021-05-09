@@ -2,6 +2,7 @@ import sys
 import pygame
 import puyoenv
 import helpers
+import requests
 
 class Player(puyoenv.PuyoEnv):
     offset = (100, 100)
@@ -46,7 +47,7 @@ class Game:
         counter = 0
         while True:
             counter += 1
-            self.clock.tick(30)
+            self.clock.tick()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
@@ -62,7 +63,7 @@ class Game:
                 '''
                 
                 code = helpers.get_code(row1,col1,row2,col2)
-                print('code',code)
+                #print('code',code)
                 
                 
                 # compute the optimal move, and make it!
@@ -73,7 +74,7 @@ class Game:
                     # calculate what move to make to align with the desired move (first in list)
                     # create fake input to mimic this
                     move = self.player1.moves_to_make[0]
-                    print('move', move)
+                    #print('move', move)
                     if (code != move):
                         
                         if code[1] != move[1]: # the alignment does not match
@@ -92,14 +93,34 @@ class Game:
 
                 else: 
                     # perform the search
-                    print(self.player1.moves_to_make)
-                    result = self.player1.searcher.search()
-                    self.player1.moves_to_make = result.moves
+                    #print(self.player1.moves_to_make)
+
+                    buf = [self.player1.current] + self.player1.buffer
+
+                    #print(buf)
+
+                    new_buf = helpers.collection_to_int(buf)
+
+                    board = {
+                        "width": len(self.player1.board[0]),
+                        "height": len(self.player1.board),
+                        "board":self.player1.get_board(),
+                        "buffer": new_buf
+                    }
+
+                    x = requests.post("http://127.0.0.1:8080/",json=board )
+
+                    result = x.json()
+
+                    #print('server recommends moves:', result["moves"])
+                    #print('parsed',)
+
+                    result =  helpers.parse_moves(result["moves"])
+
+                    self.player1.moves_to_make = result
                     if not self.player1.moves_to_make:
                         self.player1.moves_to_make.append((5,1))
-                    else: 
-                        helpers.print_board(result.board)
-                        print('ai recommends moves:', result.moves)
+                    
 
                 
                 if actions[0]:
