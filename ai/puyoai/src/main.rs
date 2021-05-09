@@ -6,19 +6,31 @@ use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::vec;
 use std::cmp;
+
+use actix_web::{get, post, web, App, HttpResponse, Result,Responder};
+use serde::{Deserialize, Serialize};
 const POWERS: [i32; 19] = [
     0, 8, 17, 23, 35, 71, 118, 178, 239, 300, 377, 454, 534, 613, 693, 699, 699, 699, 699,
 ];
 
 const COLORS_BONUS: [i32; 5] = [0, 3, 6, 12, 24];
 
-fn main() {
-    // create a board with 6 columns and 12 rows, using 8bit unsigned integers
-    //let arr: [[u8; 6]; 12] = [[0; 6]; 12];
-    //for x in &arr {
-    //    println!("x is {:?}", x);
-    //}
-    //println!("Board is: {:?}!", arr);
+#[derive(Serialize, Deserialize)]
+struct Board {
+    width: i32,
+    height: i32,
+    board: Vec<Vec<u8>>
+}
+
+#[derive(Serialize,Deserialize)]
+struct Moves {
+    moves: Vec<(u8,u8)>
+}
+
+#[post("/")]
+async fn serve_board(body: String) -> Result<HttpResponse> {
+    // perform a search
+
 
     let my_board = new_board(6, 12);
     //print_board(&new_board(6, 12));
@@ -27,39 +39,46 @@ fn main() {
     moves.push_back((1,1));
     moves.push_back((1,2));
     moves.push_back((1,2));
-    //moves.push_back((2,2));
 
-    //let mut stack = Vec::new();
+    //let mut s = ai::Search::new(&body.board, moves);
 
-    //let lol = ai::Node::new(my_board.to_vec(), moves, 0, Vec::new());
-    //lol.advance(&mut stack);
+    //let r = s.search();
 
 
-
-    let mut s = ai::Search::new(&my_board, moves);
-
-    let r = s.search();
-
-    println!("Recommended moves: {:?}", r);
-
-    let mut wtf = new_board(6, 12);
-
-    place(&mut wtf, 1, 0);
-    place(&mut wtf, 1, 0);
-    place(&mut wtf, 1, 0);
-    place(&mut wtf, 2, 0);
-    place(&mut wtf, 2, 0);
-    place(&mut wtf, 2, 0);
-
-    print_board(&wtf);
-
-    // let mut score = scoring::Score::new();
-    // let results = drop_board(&my_board, &mut score);
-    // println!("w{:?}", results);
-    // score.report();
-
-    // println!("projected score: {}",projected_score(my_board).1);
+    // return the calculated moves
+    Ok(HttpResponse::Ok().json(Board {
+        height: 12,
+        width: 6,
+        board: my_board,
+    }))
 }
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    use actix_web::{App, HttpServer};
+
+    HttpServer::new(|| App::new().service(serve_board))
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
+}
+
+// fn main() {
+//     // create a board with 6 columns and 12 rows, using 8bit unsigned integers
+//     //let arr: [[u8; 6]; 12] = [[0; 6]; 12];
+//     //for x in &arr {
+//     //    println!("x is {:?}", x);
+//     //}
+//     //println!("Board is: {:?}!", arr);
+
+
+//     // let mut score = scoring::Score::new();
+//     // let results = drop_board(&my_board, &mut score);
+//     // println!("w{:?}", results);
+//     // score.report();
+
+//     // println!("projected score: {}",projected_score(my_board).1);
+// }
 
 /// Creates a blank board with the specified width and height
 fn new_board(w: usize, h: usize) -> Vec<Vec<u8>> {
@@ -71,7 +90,7 @@ fn new_board(w: usize, h: usize) -> Vec<Vec<u8>> {
 }
 
 /// Prints a board out in a human readable format
-fn print_board(board: &Vec<Vec<u8>>) {
+fn _print_board(board: &Vec<Vec<u8>>) {
     println!("Board:");
     for x in board {
         println! {"{:?}",x}
