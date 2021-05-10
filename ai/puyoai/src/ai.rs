@@ -1,11 +1,14 @@
 //! The search class
 use std::collections::VecDeque;
+
+#[derive(Clone)]
 pub struct Node {
     pub board: Vec<Vec<u8>>,
     buffer: VecDeque<(u8,u8)>,
     score_acc: i32,
     moves: Vec<(u8,u8)> 
 }
+
 
 impl Node {
     pub fn new (
@@ -112,7 +115,22 @@ impl Node {
             stack.push(new);
         }
 
+    } 
+
+    pub fn inject_buffers(& self, buf: Vec<VecDeque<(u8,u8)>>) -> Vec<Node> {
+
+        let mut result = Vec::new();
+
+        for x in buf {
+            let mut copy = self.clone(); // clone the entire node 
+            copy.buffer = x; // set the new buffer
+            result.push(copy);
+        }
+
+        result
+
     }
+
 
 }
 
@@ -149,4 +167,56 @@ impl Search {
         return best;
 
     }
+
+
+    fn init_alt_search(&mut self) -> Vec<Node> {
+        // advance the search
+        // the search must have a root
+        self.root.advance(&mut self.leaves);
+        
+        let mut leaves_max_depth = Vec::new(); // a collection of the nodes at max depth, whose buffer will need to be supplemented and searched
+
+        while self.leaves.len() > 0 {
+            let current = self.leaves.pop().expect("Leaf expected, but none found.");
+            
+            if current.buffer.len() == 0 
+            { // if no more raw moves r made, collect the final nodes. they will be the root for the new search
+                leaves_max_depth.push(current.clone());
+            }
+
+            current.advance(&mut self.leaves);
+        }
+
+        leaves_max_depth
+
+    }
+
+
+    /// The alternative search, creates a new child with each buffer
+    fn alt_search_helper(&mut self) -> (u8,u8) {
+
+        // create all of the new buffers
+
+        let sample: Vec<u8> = vec![1,2,3,4];
+
+        let all = super::compute_all_puyos(&sample);
+
+        let mut bufs = Vec::new(); // the collection the buffers will be collected into
+        super::compute_buffers(0, 1, &mut bufs, &all);
+        
+        // for each node, pass it a new buffer and advance the search
+
+        let leaves_to_preprocess = self.init_alt_search(); // reassign the leaves in the search to be the leaves of the initial search
+        for leaf in leaves_to_preprocess {
+            let new_leaves = leaf.inject_buffers(bufs); // correct this to the proper type!
+        }
+        
+        // pop from stack, advancing normally until complete.
+
+        (0,0)
+    }
+
+
+
+
 }
