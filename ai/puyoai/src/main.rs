@@ -15,6 +15,10 @@ const POWERS: [i32; 19] = [
 
 const COLORS_BONUS: [i32; 5] = [0, 3, 6, 12, 24];
 
+const DEPTH: u8 = 5;
+
+const COLORS: [i32;4] = [1,2,3,4];
+
 #[derive(Serialize, Deserialize)]
 struct Board {
     width: i32,
@@ -34,9 +38,20 @@ async fn serve_board(body: web::Json<Board>) -> Result<HttpResponse> {
     // perform a search
     let moves = body.buffer.clone();
 
+    let colors: Vec<u8> = vec![1,2,3,4];
+
     let mut s = ai::Search::new(&body.board, moves); // can change moves to a static reference!
 
-    let r = s.search();
+    let mut r = s.search();
+
+    let all_possible = compute_all_puyos(&colors);
+
+    // if the board is mostly uncovered, then truncate the output so that a new best move is calculated next round
+    if board_coverage(&body.board) < 0.7 
+    {
+        // then, trigger the AI to break the chain (ie: do not cut the output short)
+        r.truncate(1);
+    } 
 
     // return the calculated moves
     Ok(HttpResponse::Ok().json(Moves {
@@ -283,4 +298,72 @@ fn get_score(score:& scoring::Score) -> i32
     return (10 * score.chain_size) * cmp::max(1,m) 
 }
 
+/// Returns the normalized value representing the percentage of the board that is filled. 
+fn board_coverage(board:&Vec<Vec<u8>>) -> f32 {
+    let w = board[0].len();
+    let h = board.len();
 
+    let mut count = 0;
+
+    // count non-zero values on board
+    for i in board {
+        for j in i {
+            if *j != 0 {
+                count += 1;
+            }
+        }
+    }
+
+    count as f32 / (w * h) as f32
+
+}
+
+/// Computes every single distinct possible puyo piece
+fn compute_all_puyos(colors:&Vec<u8>) -> Vec<(u8,u8)>
+{
+    // for N colors, there are N^2 distinct puyo puyo pieces.
+    let mut all_puyos = Vec::new();
+
+
+    // thankfully, div handles all orientations of a piece
+    // so, for ex. we can treat (1,2) and (2,1) as equivalent
+    // hence the division by 2 above
+
+    for i in 0..colors.len() {
+        for j in 0..colors.len()
+        {
+            all_puyos.push((colors[i],colors[j]));
+        }
+    }
+    all_puyos
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn compute_puyos_correctness(){
+        let sample: Vec<u8> = vec![1,2,3,4];
+
+        let results = super::compute_all_puyos(&sample);
+        
+        let expected: Vec<(u8,u8)> = vec![(1,1),(1,2),(1,3),(1,4),(2,1),(2,2),(2,3),(2,4),(3,1),(3,2),(3,3),(3,4),(4,1),(4,2),(4,3),(4,4)];
+        assert_eq!(results,expected);
+    }
+
+    #[test]
+    fn place_correctness(){
+        let mut b = super::_new_board(6, 12);
+        let mut copy = b.clone();
+
+        super::place(&mut b, 3, 1);
+        super::place(&mut b, 2, 1);
+        super::place(&mut b, 1, 1);
+
+        copy[11][1] = 3;
+        copy[10][1] = 2;
+        copy[9][1] = 1;
+
+        assert_eq!(copy, b);
+    }
+
+}
