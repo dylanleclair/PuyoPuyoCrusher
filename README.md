@@ -11,7 +11,7 @@ This has been developed as an HTTP microservice that takes requests about the ga
 
 This project was developed in Rust, with Actix Web as the framework for serving requests. It was designed this was for maximum portability, while also being extremely fast and safely written. 
 
-The Puyo code that is used to send requests to the microservice and visualize it was largely written by my brother, Eric Leclair. 
+The python code used to drive the Puyo game and visualize it was largely written by my brother, Eric Leclair. 
 
 # Sending and reading responses :dart:
 

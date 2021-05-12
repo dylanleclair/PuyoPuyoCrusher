@@ -9,16 +9,16 @@ pub struct Node {
 
 impl Node {
     pub fn new(
-        b: Vec<Vec<u8>>,
-        buf: VecDeque<(u8, u8)>,
+        board: Vec<Vec<u8>>,
+        buffer: VecDeque<(u8, u8)>,
         score: i32,
-        moveset: Vec<(u8, u8)>,
+        moves: Vec<(u8, u8)>,
     ) -> Node {
         return Node {
-            board: b,
-            buffer: buf,
+            board,
+            buffer,
             score_acc: score,
-            moves: moveset,
+            moves,
         };
     }
     /// Returns a new board, along with the move that was taken to yield it in Simple Puyo Puyo Notation
@@ -136,4 +136,8 @@ impl Search {
         }
         return best;
     }
+}
+
+pub fn stairs_pattern(board: Vec<Vec<(u8, u8)>>) {
+    // at the
 }
