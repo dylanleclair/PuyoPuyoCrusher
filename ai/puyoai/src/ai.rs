@@ -101,7 +101,13 @@ impl Node {
             // @TODO shouldn't need to return the board unless you are reconsidering after every move
             // since no side effects are possible using the current heuristic
 
-            let new = Node::new(copy, buffer.clone(), self.score_acc + results.1, new_moves);
+            let mut local_score = 0;
+
+            if buffer.len() == 0 {
+                local_score = results.1
+            }
+
+            let new = Node::new(copy, buffer.clone(), local_score, new_moves);
             stack.push(new);
         }
     }
@@ -136,8 +142,4 @@ impl Search {
         }
         return best;
     }
-}
-
-pub fn stairs_pattern(board: Vec<Vec<(u8, u8)>>) {
-    // at the
 }

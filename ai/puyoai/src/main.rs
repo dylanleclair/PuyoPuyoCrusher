@@ -38,13 +38,9 @@ async fn serve_board(body: web::Json<Board>) -> Result<HttpResponse> {
     // perform a search
     let moves = body.buffer.clone();
 
-    let colors: Vec<u8> = vec![1,2,3,4];
-
     let mut s = ai::Search::new(&body.board, moves); // can change moves to a static reference!
 
     let mut r = s.search();
-
-    let all_possible = compute_all_puyos(&colors);
 
     // if the board is mostly uncovered, then truncate the output so that a new best move is calculated next round
     if board_coverage(&body.board) < 0.7 
@@ -332,7 +328,9 @@ fn compute_all_puyos(colors:&Vec<u8>) -> Vec<(u8,u8)>
     for i in 0..colors.len() {
         for j in 0..colors.len()
         {
-            all_puyos.push((colors[i],colors[j]));
+            if !all_puyos.contains(&(colors[i],colors[j])) {
+                all_puyos.push((colors[i],colors[j]));
+            }
         }
     }
     all_puyos
