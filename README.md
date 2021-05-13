@@ -3,7 +3,7 @@
 ![](images/initial_server.gif)
 
 
- A revamped Puyo Puyo AI that employs a search as it's main methodology.
+ A revamped Puyo Puyo AI that employs a tree-based-search as it's main methodology.
 
 This has been developed as an HTTP microservice that takes requests about the gamestate of a puyo board, sending back a move to be made using JSON.
 
@@ -15,13 +15,13 @@ The python code used to drive the Puyo game and visualize it was largely written
 
 # Sending and reading responses :dart:
 
-The current state of the codebase is set up to take requests from the AI microservice. 
+The API for this microservice has a single API endpoint.
 
-Any instance of any Puyo game can simply send the AI server a JSON, including the width and height of the board, the board itself, and the buffer of incoming Puyo pieces.
+Any instance of any Puyo game can simply send a POST request to the AI server, including the width and height of the board, the board itself, and the buffer of incoming Puyo pieces.
 
 A sample of the JSON that must be sent can be located in the root of this repo, at `sample_board.json`.
 
-Expected output is what move to make, encoded in what I refer to as SPPN or Simple Puyo Puyo Notation:
+The server responds with a list of moves to make, encoded in what I refer to as SPPN or Simple Puyo Puyo Notation:
 
 ```json
 {
